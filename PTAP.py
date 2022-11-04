@@ -3214,11 +3214,6 @@ def dashboard_interactivo(value_dia, value_unidades, value_mes, value_unidades_m
     pesoGT = list(map(lambda x: float(x), pesoGT))
     pesoGT = round(pesoGT[0], 0)
 
-    # print(capGT)
-    # print(prctUso)
-    # print(volGT)
-    # print(pesoGT)
-
     # Cuenta los días operados del GT
     diasOperGTvec = fechaGTvec
     diasOperGTvec = list(map(lambda x: str(x.day) + "/" + str(x.month) + "/" +str(x.year), diasOperGTvec))

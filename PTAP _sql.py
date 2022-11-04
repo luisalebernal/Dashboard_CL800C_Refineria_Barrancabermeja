@@ -2068,6 +2068,52 @@ app.layout = dbc.Container([
                     ])
                 ]),
             ], label="Resumen Geotube", label_style={'color': '#082255', 'font-family': "Franklin Gothic"}),
+            dbc.Tab(dbc.Row([
+                    dbc.Col([
+                        dbc.Card([
+                            dbc.CardBody([
+                                dbc.Row([
+                                    dbc.Col([
+                                        html.Video(
+                                            controls=True,
+                                            id='Corte',
+                                            src="/assets/PTAP_video.mp4",
+                                            autoPlay=True
+                                        ),
+                                    ]),
+
+                                ]),
+                               dbc.Row([
+                                   dbc.Col([
+                                   dbc.Carousel(
+                                    items=[
+                                        {"key": "1", "src": "/assets/PTAP1.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP2.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP3.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP4.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP5.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP6.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP7.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP8.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP9.jpeg", "header": "", },
+                                        {"key": "1", "src": "/assets/PTAP_video.mp4", "header": "", },
+                                        # {"key": "1", "src": "/assets/PTAP_video.mp4", "header": "", },
+
+
+                                    ],
+                                    controls=True,
+                                    indicators=True,
+                                    interval=5000,
+                                    ride="carousel",
+                                    variant="dark",
+                                )
+                                   ], width=8, align='center', style={'textAlign': 'center'}),
+
+                               ])
+                            ])
+                        ])
+                    ])
+                ]), label="Imágenes/Video", label_style={'color': '#082255', 'font-family': "Franklin Gothic"}),
         ]),
     ]),
 
@@ -2115,11 +2161,6 @@ def dropdownTiempoReal(value_intervals):
     dfCOMBINADO_norm_SQL5 = pd.read_sql_query(selectquery5, conn)
     conn.close()
 
-    print('dfCOMBINADO_norm_SQL')
-    print(dfCOMBINADO_norm_SQL)
-    print('dfCOMBINADO_norm_SQL5')
-    print(dfCOMBINADO_norm_SQL5)
-
     dfCOMBINADO_norm_SQL.columns = [namesSQL]
     dfCOMBINADO_norm_SQL.drop([0], inplace=True)
 
@@ -2133,8 +2174,9 @@ def dropdownTiempoReal(value_intervals):
     start = time.time()
 
     dfCOMBINADO2 = dfCOMBINADO_norm_SQL.rename(index=lambda x: x - 1)
-    dfCOMBINADO2 = dfCOMBINADO2.apply(pd.to_numeric, errors='ignore')
-    dfCOMBINADO_norm_SQL5 = dfCOMBINADO_norm_SQL5.apply(pd.to_numeric, errors='ignore')
+    dfCOMBINADO2 = dfCOMBINADO2.apply(lambda x: x.str.replace(",", ".")).apply(pd.to_numeric, errors='ignore')
+    dfCOMBINADO_norm_SQL5 = dfCOMBINADO_norm_SQL5.apply(lambda x: x.str.replace(",", ".")).apply(pd.to_numeric, errors='ignore')
+
     dfPURG49 = dfCOMBINADO2.iloc[:, [0, 1, 2, 3, 4, 5]]
     dfLDS49 = dfCOMBINADO2.iloc[:, [9, 10, 11, 12, 13, 14]]
     dfCLR49 = dfCOMBINADO2.iloc[:, [18, 19, 20, 21, 22, 23, 24, 25, 26]]
@@ -2170,11 +2212,6 @@ def dropdownTiempoReal(value_intervals):
     dfCLRopti = np.concatenate((dfCLR49, dfCLR50))
     dfGTopti = np.concatenate((dfGT49, dfGT50))
 
-    # dfPURGopti = dfPURG49
-    # dfLDSopti = dfLDS49
-    # dfCLRopti = dfCLR49
-    # dfGTopti = dfGT49
-
     dfPURGopti = pd.DataFrame(dfPURGopti,  columns =["Fecha", "Hora Inicio", "Hora Fin", "Altura Inicial [m]",
                                                    "Altura Final [m]", "Fase"])
 
@@ -2194,8 +2231,6 @@ def dropdownTiempoReal(value_intervals):
     dfCLR = dfCLRopti
     dfGT = dfGTopti
 
-
-
     # convertir datos de string a tipo fecha
     fechaPURG = dfPURG.loc[:, "Fecha"]
     fechaCLR = dfCLR.loc[:, "Fecha"]
@@ -2203,15 +2238,10 @@ def dropdownTiempoReal(value_intervals):
     fechaGT = dfGT.loc[:, "Fecha"]
 
     ultAct = dfCLR["Fecha"].iloc[-1]
-    ultAct = str(ultAct)
-
-    fechaCLRdd = list(dict.fromkeys(fechaCLR))
-    fechaGTdd = list(dict.fromkeys(fechaGT))
 
     fechaPURG = list(map(lambda fecha: datetime.strptime(fecha, "%d/%m/%Y"), fechaPURG))
-    fechaCLR = list(map(lambda fecha: datetime.strptime(fecha, "%d/%m/%Y"), fechaCLR))
     fechaLDS = list(map(lambda fecha: datetime.strptime(fecha, "%d/%m/%Y"), fechaLDS))
-    fechaGT = list(map(lambda fecha: datetime.strptime(fecha, "%d/%m/%Y"), fechaGT))
+
 
     fechaPURGdd = list(dict.fromkeys(fechaPURG))
     fechaPURGdd.sort(reverse=True)
@@ -2223,7 +2253,6 @@ def dropdownTiempoReal(value_intervals):
 
     anosfechaLDS = list(dict.fromkeys(anosfechaLDS))
     anosfechaLDS.sort(reverse=True)
-    fasedd = list(dict.fromkeys(dfLDS["Fase"]))
 
     # Calcula variables faltantes
     dfPURG['Volumen [m3]'] = (dfPURG['Altura Final [m]'] - dfPURG['Altura Inicial [m]']) * 4
@@ -2239,11 +2268,7 @@ def dropdownTiempoReal(value_intervals):
     dfGT["% Uso"] = dfGT["Volumen Teórico [m3]"] / dfGT["Capacidad [m3]"]
     dfGT["Peso [Ton]"] = dfGT["Volumen Teórico [m3]"]  * 1.23
 
-    m3GTvec = dfGT.loc[:, "Volumen Teórico [m3]"]  # vector de volumen teórico de Geotube
-    usoGTvec = dfGT.loc[:, "% Uso"]  # vector de volumen teórico de Geotube
-    pesoGTvec = dfGT.loc[:, "Peso [Ton]"]  # vector de volumen teórico de Geotube
     numGTvec = dfGT.loc[:, "Numero"]
-    capGTvec = dfGT.loc[:, "Capacidad [m3]"]
     faseGTvec = dfGT.loc[:, "Fase"]
 
     numGTdd = list(dict.fromkeys(numGTvec))
@@ -2265,7 +2290,6 @@ def dropdownTiempoReal(value_intervals):
     # Devuelve último geotube utilizado
     GTHoy = numGTdd[0]
 
-
     return fechaPURGdd, anosfechaLDS, fasedd, numGTdd, dfPURG.to_dict('records'), dfLDS.to_dict('records'), \
            dfCLR.to_dict('records'), dfGT.to_dict('records'), diaHoy, anoHoy, faseHoy, GTHoy
 
@@ -2284,10 +2308,8 @@ def Selec_mes_interactivo(value_ano, data1, data2, data3, data4):
     data3 = pd.DataFrame(data3)
     data4 = pd.DataFrame(data4)
 
-    dfPURG = data1
     dfLDS = data2
-    dfCLR = data3
-    dfGT = data4
+
 
     # convertir datos de string a tipo fecha
     fechaLDS = dfLDS.loc[:, "Fecha"]
@@ -2301,10 +2323,6 @@ def Selec_mes_interactivo(value_ano, data1, data2, data3, data4):
 
     meses_selec = list(dict.fromkeys(meses_selec))
     meses_selec.sort(reverse=True)
-
-    # Calcula último mes operado
-    mesHoy = str(meses_selec[-1])
-
 
     return [{'label': c, 'value': c} for c in meses_selec]
 
@@ -2334,9 +2352,6 @@ def Num_Geotube_interactivo(value_numGT, data1, data2, data3, data4):
     data3 = pd.DataFrame(data3)
     data4 = pd.DataFrame(data4)
 
-    dfPURG = data1
-    dfLDS = data2
-    dfCLR = data3
     dfGT = data4
 
 
@@ -2500,14 +2515,7 @@ def dashboard_interactivo(value_dia, value_unidades, value_mes, value_unidades_m
     pHCLRvec = dfCLR.loc[:, "pH"]  # vector del pH de agua clarificada
     turbCLRvec = dfCLR.loc[:, "Turbidez [NTU]"]  # vector de la turbidez de agua clarificada
     colorCLRvec = dfCLR.loc[:, "Color [Pt-Co]"]  # vector del color de agua clarificada
-
-    galCLRvec = list(map(lambda x: float(x), galCLRvec))
-    pHCLRvec = list(map(lambda x: float(x), pHCLRvec))
-    turbCLRvec = list(map(lambda x: float(x), turbCLRvec))
-    colorCLRvec = list(map(lambda x: float(x), colorCLRvec))
-
     galPURGvec = dfPURG.loc[:, "Volumen [gal]"]  # vector de los galones captados del clarificador
-    galPURGvec = list(map(lambda x: float(x), galPURGvec))
 
     # --------------------------------- Módulo 1 ------------------------------------------
 
@@ -2550,8 +2558,7 @@ def dashboard_interactivo(value_dia, value_unidades, value_mes, value_unidades_m
     prctaguatratdia = galdiaCLRacum / galdiaLDSacum * 100
     prctaguatratdia = round(prctaguatratdia, 1)
 
-    if prctaguatratdia > 100:
-        prctaguatratdia = 100
+    if prctaguatratdia > 100: prctaguatratdia = 100
 
     # Cambia unidades a m3 por radioitem
     suffix_galdiaacum_dia = "gal"
@@ -2561,7 +2568,7 @@ def dashboard_interactivo(value_dia, value_unidades, value_mes, value_unidades_m
         suffix_galdiaacum_dia = "m3"
 
     # --------------------------------- Módulo 2 ------------------------------------------
-
+    start = time.time()
     # Calcula las purgas captadas para un mes determinado & volumen [gal] total para un mes determinado
     mes = value_mes
     año = value_año
@@ -2727,7 +2734,13 @@ def dashboard_interactivo(value_dia, value_unidades, value_mes, value_unidades_m
     )
     figMesprop.update_xaxes(title_font_family="Franklin Gothic")
 
+    end = time.time()
+    t = end - start
+    print('Tiempo módulo 2 es:')
+    print(t)
+
     # --------------------------------- Módulo 3 ------------------------------------------
+    start = time.time()
     # Calcula las purgas totales captadas
     purgstotLDS = len(galPURGvec)
 
@@ -2891,6 +2904,10 @@ def dashboard_interactivo(value_dia, value_unidades, value_mes, value_unidades_m
         # legend_title_font_color="green"
     )
     figacumprop.update_xaxes(title_font_family="Franklin Gothic")
+    end = time.time()
+    t = end - start
+    print('Tiempo módulo 3 es:')
+    print(t)
 
     ################################# Módulo Fase ###########################################
 
