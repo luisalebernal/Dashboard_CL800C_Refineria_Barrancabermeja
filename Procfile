@@ -1,1 +1,1 @@
-web: gunicorn PTAP_SQL:server
+web: gunicorn PTAP_sql:server
