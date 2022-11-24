@@ -1,1 +1,1 @@
-web: gunicorn PTAP_googlesheets2phpmyadmin:server
+web: gunicorn PTAP_SQL:server
