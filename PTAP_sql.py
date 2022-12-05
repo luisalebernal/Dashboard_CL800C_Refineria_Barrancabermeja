@@ -2072,17 +2072,17 @@ app.layout = dbc.Container([
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                dbc.Row([
-                                    dbc.Col([
-                                        html.Video(
-                                            controls=True,
-                                            id='Corte',
-                                            src="/assets/PTAP_video.mp4",
-                                            autoPlay=True
-                                        ),
-                                    ]),
+#                                 dbc.Row([
+#                                     dbc.Col([
+#                                         html.Video(
+#                                             controls=True,
+#                                             id='Corte',
+#                                             src="/assets/PTAP_video.mp4",
+#                                             autoPlay=True
+#                                         ),
+#                                     ]),
 
-                                ]),
+#                                 ]),
                                dbc.Row([
                                    dbc.Col([
                                    dbc.Carousel(
